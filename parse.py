@@ -1,19 +1,35 @@
 #!/usr/bin/env python
 
-import gzip
 import os
 import re
 import json
 from subprocess import call
 
 def ProcessEmotionLexicon( source_path, target_filename ):
-	if not os.path.exists( 'json' ):
+	if not os.path.exists( 'rawjson' ):
 		# if not which("npm"):
 		# 	print("process emotion lexicon: cannot find command npm in the system!")
 		# if not which("pdf2json"):
 		# 	call(["sudo", "npm", "install", "pdf2json", "-g"])
 		# call(["sudo", "npm", "update", "pdf2json", "-g"]) # shouldn't this go into make file?
-		call(["sudo", "pdf2json", "-f", "papers/05669299.pdf"])
+		# for filename in os.listdir ("./papers"):
+		# 	print filename
+		# 	papername = "papers/" + filename
+		os.makedirs ("rawjson")
+		call(["sudo", "pdf2json", "-f", "papers", "-o", "rawjson"])
+	
+	if not os.path.exists('result_json'):
+		os.makedirs("result_json")
+
+	for filename in os.listdir ("rawjson"):
+		# print filename
+		paper = open("rawjson/"+filename)
+		data = json.load(paper)
+		paper.close()
+		# print paper_data
+		with open( "result_json/"+filename, 'w+' ) as f:
+				json.dump( data, f, encoding = 'utf-8', indent = 2, sort_keys = True )
+
 
 	# unigrams = {}
 	# lexicon = {
@@ -21,9 +37,9 @@ def ProcessEmotionLexicon( source_path, target_filename ):
 	# 		'bigrams' : {},
 	# 		'pairs' : {}
 	# 	}
-	json_data=open("papers/05669299.json")
-	data = json.load(json_data)
-	json_data.close()
+	# json_data=open("papers/05669299.json")
+	# data = json.load(json_data)
+	# json_data.close()
 
 	# pagelist = data["formImage"]["Pages"]
 	# for p in range(5, len(pagelist)): # appendix starts at page 6
@@ -43,7 +59,7 @@ def ProcessEmotionLexicon( source_path, target_filename ):
 	# 				unigrams[term][feature_name] = int(feature_score)
 	# 			t = t + 10
 	# 		t = t+1
-	with open( "json/test.json", 'w+' ) as f:
-			json.dump( data, f, encoding = 'utf-8', indent = 2, sort_keys = True )
+	# with open( "json/test.json", 'w+' ) as f:
+	# 		json.dump( data, f, encoding = 'utf-8', indent = 2, sort_keys = True )
 
 ProcessEmotionLexicon("", "");
